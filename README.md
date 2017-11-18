@@ -1,4 +1,4 @@
-###首先：什么是MVVM？
+### 首先：什么是MVVM？
 
 MVVM是Model-View-ViewModel的简写，是有别于MVC和MVP的另一种架构模式。
 
@@ -155,5 +155,7 @@ Databinding强化了layout文件在Android中的地位，许多显示和点击�
 另一个好处就是可以做单元测试，纯的kotlin代码写着再舒服不过，而且可以保证数据的正确性。相比于run app需要十几秒或者几分钟、十几分钟，run 一次单元测试是以毫秒记的，效率是很可观的。
 
 ### 结尾
+
+github地址：[https://github.com/ditclear/MVVM-Android]
 
 这是使用Kotlin构建MVVM项目的第一部分，也是入门篇，所以很简单，介绍了一下MVVM的概念和基础写法，第二篇我将加入retrofit网络请求和Rxjava来深入谈谈怎么较好的处理网络数据及绑定生命周期。
