@@ -152,7 +152,7 @@ class PaoActivity : AppCompatActivity() {
 
 还算有点模样，那么现在就到了本篇的重点了，**怎么像这样处理返回的网络数据？**。
 
-再来看看xml布局文件（由于篇幅原因，所以这里只截取主要部分，详细请查看`pao_activity.xml`）
+再来看看xml布局文件，由于篇幅原因，所以这里只截取主要部分，详细请查看[pao_activity.xml](https://github.com/ditclear/MVVM-Android/blob/f4adf1d534b92e2596335f5461039cf8f09b858f/app/src/main/res/layout/pao_activity.xml)
 
 ```xml
 <!--省略-->
@@ -169,7 +169,7 @@ class PaoActivity : AppCompatActivity() {
 
 > markdownView.loadMarkdown("## Hello Markdown"); 
 
-并没有提供`setMarkDown(markdown:String)`方法，相信这种情况很常见，经常需要我们改动第三方库达到项目的需求。所以这里需要自定义一下`BindingAdapter`，具体见`NormalBinds.kt`
+并没有提供`setMarkDown(markdown:String)`方法，相信这种情况很常见，经常需要我们改动第三方库达到项目的需求。所以这里需要自定义一下`BindingAdapter`，具体见[NormalBinds.kt](https://github.com/ditclear/MVVM-Android/blob/f4adf1d534b92e2596335f5461039cf8f09b858f/app/src/main/java/io/ditclear/app/helper/NormalBinds.kt)
 
 ```kotlin
 @BindingAdapter(value = "markdown")
@@ -182,7 +182,7 @@ fun bindMarkDown(v: MarkdownView, markdown: String?) {
 
 眼尖的同学就发现了，这不是有`setMarkdown`方法吗？
 
-别急，其实这只是使用`kotlin`给`MarkdownView`添加的扩展函数，具体见`NormalExtens.kt`
+别急，其实这只是使用`kotlin`给`MarkdownView`添加的扩展函数，具体见[NormalExtens.kt](https://github.com/ditclear/MVVM-Android/blob/f4adf1d534b92e2596335f5461039cf8f09b858f/app/src/main/java/io/ditclear/app/helper/NormalExtens.kt)
 
 ```
 fun MarkdownView.setMarkdown(markdown : String?){
@@ -190,7 +190,7 @@ fun MarkdownView.setMarkdown(markdown : String?){
 }
 ```
 
-再来瞧瞧我们的`PaoActivity.kt`，依然捡重点
+再来瞧瞧我们的[PaoActivity.kt](https://github.com/ditclear/MVVM-Android/blob/f4adf1d534b92e2596335f5461039cf8f09b858f/app/src/main/java/io/ditclear/app/viewmodel/PaoViewModel.kt)，依然捡重点
 
 ```kotlin
 override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -275,7 +275,7 @@ remote.getArticleDetail(8773)
                 .subscribe(...)
 ```
 
-1. **不依赖于具体实现**
+2. **不依赖于具体实现**
 
 loading.set(true) 和 loading.set(false) 现在就能达到我们想要的效果
 
