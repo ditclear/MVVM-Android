@@ -28,8 +28,8 @@ kapt {
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-
     compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     //data binding
     kapt "com.android.databinding:compiler:2.3.3"
@@ -42,6 +42,11 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'com.google.code.gson:gson:2.8.0'
+
+
+    //不重要
+    compile 'us.feras.mdv:markdownview:1.1.0'
+    compile 'org.jsoup:jsoup:1.10.3'//处理html中的image
 
     testCompile 'junit:junit:4.12'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {

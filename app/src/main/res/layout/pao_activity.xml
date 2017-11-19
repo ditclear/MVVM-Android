@@ -1,37 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <!--需要的viewModel,通过mBinding.vm=mViewMode注入-->
         <variable
                 name="vm"
                 type="io.ditclear.app.viewmodel.PaoViewModel"/>
     </data>
 
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            tools:context="io.ditclear.app.view.PaoActivity">
+            app:toast="@{vm.error}"
+            android:fitsSystemWindows="true">
 
-
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="24dp"
-                android:onClick="@{()->vm.loadArticle()}"
-                android:text="load article"
-                android:textAllCaps="false"/>
-
-
-        <TextView
+        <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@{vm.articleDetail}"
-                tools:text="点击按钮，调用ViewModel中的loadArticle方法，通过DataBinding更新UI"/>
+                android:layout_height="200dp"
+                android:fitsSystemWindows="true"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    </LinearLayout>
+            <android.support.design.widget.CollapsingToolbarLayout
+                    android:id="@+id/toolbar_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    app:contentScrim="?attr/colorPrimary"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                <android.support.v7.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        app:layout_collapseMode="pin"
+                        app:title="@{vm.title}"
+                        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+                android:id="@+id/scroll_view"
+                android:overScrollMode="never"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical">
+                <ProgressBar
+                        android:id="@+id/loading"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="64dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        android:indeterminateTint="@color/colorPrimary"
+                        android:indeterminateTintMode="src_in"
+                        android:visibility="@{vm.loading?View.VISIBLE:View.GONE}"/>
+
+                <us.feras.mdv.MarkdownView
+                        android:id="@+id/web_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:markdown="@{vm.content}"
+                        android:visibility="@{vm.loading?View.GONE:View.VISIBLE}"/>
+
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+
+    </android.support.design.widget.CoordinatorLayout>
 </layout>
