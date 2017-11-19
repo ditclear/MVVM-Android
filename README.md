@@ -1,3 +1,5 @@
+![](http://upload-images.jianshu.io/upload_images/3722695-8187b588f67e9105.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 ### 写在前面
 
 这是使用Kotlin开发MVVM应用程序的第二部分—Retrofit及RxJava
@@ -254,7 +256,7 @@ class PaoViewModel(val remote: PaoService) {
 
 我们再来优化一下`loadArticle`方法
 
-1.  **使用Rxjava的`Compose`操作符将异步操作其组合起来**。
+1.  **使用kotlin的扩展将异步操作组合起来**
 
 这里我们定义一个Rxjava的扩展函数
 
@@ -347,7 +349,7 @@ fun stopLoad()=loading.set(false)
 
    ### 怎么充分利用RxJava
 
-   只需要将`loadArticle`方法改造成为一个`Single`。
+   只需要将`loadArticle`方法改造成为一个`Single`
 
    ```kotlin
    fun loadArticle():Single<Article> =
