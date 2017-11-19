@@ -1,4 +1,6 @@
-![](http://upload-images.jianshu.io/upload_images/3722695-8187b588f67e9105.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
+![](https://user-gold-cdn.xitu.io/2017/11/19/15fd45485bae61e6?w=1240&h=607&f=png&s=161835)
 
 ### 写在前面
 
@@ -23,7 +25,7 @@
     compile 'com.google.code.gson:gson:2.8.0'
 ```
 
-这次相比上一篇稍微加了点难度，这次加入了网络请求库retrofit和Rxjava。
+这次相比上一篇稍微加了点难度，这次加入了网络请求库Retrofit和Rxjava。
 
 [Retrofit](http://square.github.io/retrofit/)是现在主流的网络请求库，不了解的看[官网](http://square.github.io/retrofit/)
 
@@ -31,7 +33,7 @@
 
 准备工作做好后，先看看现在的MVVM结构
 
-![MVVM](http://upload-images.jianshu.io/upload_images/3722695-1db19cd2ea54ebf5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400)
+![MVVM](https://user-gold-cdn.xitu.io/2017/11/19/15fd4548593cc229?w=400&h=568&f=png&s=10081)
 
 这次我们的Model层的数据源来自网络，并且在ViewModel中使用RxJava进行数据的转换。
 
@@ -70,7 +72,7 @@
 
 看看现在的项目结构：
 
-![结构](http://upload-images.jianshu.io/upload_images/3722695-f8f527c615b0814b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/400)
+![结构](https://user-gold-cdn.xitu.io/2017/11/19/15fd45485b2868c4?w=400&h=363&f=png&s=59185)
 
 相比上一篇，多了一个`PaoService.kt`
 
@@ -139,7 +141,7 @@ class PaoActivity : AppCompatActivity() {
 
 看一下效果：
 
-![](https://user-gold-cdn.xitu.io/2017/11/19/15fd353765ff8b51?w=466&h=538&f=gif&s=1318392)
+![](https://user-gold-cdn.xitu.io/2017/11/19/15fd454864a1bfb7?w=466&h=538&f=gif&s=1318392)
 
 好的，目的达到了。你可以在这里查看变更
 
@@ -148,7 +150,7 @@ class PaoActivity : AppCompatActivity() {
 #### 优化
 
 为了更有说服力，我优化了一下UI，并加入loading的效果。
-![](https://user-gold-cdn.xitu.io/2017/11/19/15fd393904fa3959?w=466&h=678&f=gif&s=6888656)
+![](https://user-gold-cdn.xitu.io/2017/11/19/15fd4548627bbb9e?w=466&h=678&f=gif&s=6888656)
 
 
 
@@ -256,7 +258,7 @@ class PaoViewModel(val remote: PaoService) {
 
 我们再来优化一下`loadArticle`方法
 
-1.  **使用kotlin的扩展将异步操作组合起来**
+1. **使用kotlin的扩展将异步操作组合起来**
 
 这里我们定义一个Rxjava的扩展函数
 
@@ -277,7 +279,7 @@ remote.getArticleDetail(8773)
                 .subscribe(...)
 ```
 
-2. **不依赖于具体实现**
+2 . **不依赖于具体实现**
 
 loading.set(true) 和 loading.set(false) 现在就能达到我们想要的效果
 
@@ -425,4 +427,3 @@ fun stopLoad()=loading.set(false)
    其实回过头来看会发现，这样的方式基本告别了回调，写着都感觉好舒服，于是问自己为什么以前没想到呢?本来就该这样处理啊！至于原因的话，可能是现在Android项目中使用MVVM的例子太少，这样的方式在github上很少出现，导致自己没转过弯。所以写本文的目的之一是分享，二是希望android开发者不要盲目追从MVP，而遗忘了MVVM。
 
    第三篇我会在本项目的基础上进行数据持久化，即加入android架构组件的Room数据库，敬请期待。
-
