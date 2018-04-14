@@ -5,7 +5,7 @@ import android.databinding.ObservableField
 import io.ditclear.app.helper.Utils
 import io.ditclear.app.helper.async
 import io.ditclear.app.model.data.Article
-import io.ditclear.app.model.remote.PaoService
+import io.ditclear.app.model.repository.PaoRepo
 import io.reactivex.Single
 
 /**
@@ -13,7 +13,7 @@ import io.reactivex.Single
  * @param animal 数据源Model(MVVM 中的M),负责提供ViewModel中需要处理的数据
  * Created by ditclear on 2017/11/17.
  */
-class PaoViewModel(val remote: PaoService) {
+class PaoViewModel(private val repo: PaoRepo) {
 
     //////////////////data//////////////
     val loading=ObservableBoolean(false)
@@ -23,7 +23,7 @@ class PaoViewModel(val remote: PaoService) {
 
     //////////////////binding//////////////
     fun loadArticle():Single<Article> =
-        remote.getArticleDetail(8773)
+            repo.getArticleDetail(8773)
                 .async(1000)
                 .doOnSuccess { t: Article? ->
                     t?.let {
@@ -40,6 +40,6 @@ class PaoViewModel(val remote: PaoService) {
 
 
 
-    fun startLoad()=loading.set(true)
-    fun stopLoad()=loading.set(false)
+    private fun startLoad()=loading.set(true)
+    private fun stopLoad()=loading.set(false)
 }
