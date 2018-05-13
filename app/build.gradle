@@ -61,6 +61,10 @@ dependencies {
     implementation 'android.arch.persistence.room:rxjava2:1.0.0'
     kapt 'android.arch.persistence.room:compiler:1.0.0'
 
+    //dagger2  di
+    implementation 'com.google.dagger:dagger:2.16'
+    kapt 'com.google.dagger:dagger-compiler:2.16'
+
     //不重要
     implementation 'us.feras.mdv:markdownview:1.1.0'
     implementation 'org.jsoup:jsoup:1.10.3'//处理html中的image

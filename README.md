@@ -1,179 +1,17 @@
 ![](http://upload-images.jianshu.io/upload_images/3722695-8187b588f67e9105.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ### 目录
+
 - [使用Kotlin构建MVVM应用程序—总览篇](https://www.jianshu.com/p/77e42aebd7bb)
-- [使用Kotlin构建MVVM应用程序—第一部分：入门篇](http://www.jianshu.com/p/80926d9e64f7)
-- [使用Kotlin构建MVVM应用程序—第二部分：Retrofit及RxJava](http://www.jianshu.com/p/8993b247947a)
+- [使用Kotlin构建MVVM应用程序—第一部分：入门篇](https://www.jianshu.com/p/80926d9e64f7)
+- [使用Kotlin构建MVVM应用程序—第二部分：Retrofit及RxJava](https://www.jianshu.com/p/8993b247947a)
 - [使用Kotlin构建MVVM应用程序—第三部分：Room](https://www.jianshu.com/p/264d7d0608f0)
+- [使用Kotlin构建MVVM应用程序—第四部分：依赖注入Dagger2](https://www.jianshu.com/p/da77266970d8)
 
 ### 写在前面
 
-这是使用Kotlin构建MVVM应用程序—第三部分：Room
-
-在上一篇中我们了解了MVVM是怎么处理网络数据的，而这一篇则介绍的是如何进行数据持久化。
-
-### Room
-
-[Room](https://developer.android.com/topic/libraries/architecture/room.html)是google推出的一个数据持久化库，它是 [Architecture Component](https://developer.android.com/topic/libraries/architecture/index.html)的一部分。它让SQLiteDatabase的使用变得简单，大大减少了重复的代码，并且把SQL查询的检查放在了编译时。
-
-Room使用起来非常简单，而且可以和RxJava配合使用，和我们的技术体系十分契合。
-
-#### 加入依赖
-
-首先在项目的build.gradle中加入
-
-```groovy
-allprojects {
-    repositories {
-        maven {
-            url 'https://maven.google.com'
-        }
-        jcenter()
-    }
-}
-```
-
-接着在app的build.gradle中加入它的依赖
-
-```groovy
-//room (local)
-implementation 'android.arch.persistence.room:runtime:1.0.0'
-implementation 'android.arch.persistence.room:rxjava2:1.0.0'
-kapt 'android.arch.persistence.room:compiler:1.0.0'
-//facebook出品，可在Chrome中查看数据库
-implementation 'com.facebook.stetho:stetho:1.5.0'
-```
-
-现在的结构
-
-![MVVM](https://upload-images.jianshu.io/upload_images/3722695-3baa249672d08a92.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/480)
-
-
-
-这里我们多了一层Repository，使用这一层来确保单一数据源，保证数据来源的唯一和正确性（即不管是来自网络或是本地缓存的）。ViewModel层并不需要知道它使用到的数据是怎么来的，就好似开发者并不需要知道设计师是如何画出UI图的一样。
-
-开始正文
-
-### 使用Room进行持久化
-
-1. #### 新建相应的表
-
-Room为每个用[@Entity](https://developer.android.com/reference/android/arch/persistence/room/Entity.html)注解了的类创建一张表
-
-```kotlin
-@Entity(tableName = "articles")
-class Article(var title: String?){
-
-    @PrimaryKey
-    @ColumnInfo(name = "articleid")
-    var id: Int = 0
-    var content: String? = null
-    var readme: String? = null
-    @SerializedName("describe")
-    var description: String? = null
-    var click: Int = 0
-    var channel: Int = 0
-    var comments: Int = 0
-    var stow: Int = 0
-    var upvote: Int = 0
-    var downvote: Int = 0
-    var url: String? = null
-    var pubDate: String? = null
-    var thumbnail: String? = null
-}
-```
-
-2. #### 创建相关的Dao
-
-*相当于Retrofit中的api接口*
-
-[DAO](https://developer.android.com/topic/libraries/architecture/room.html#daos)负责定义操作数据库的方法。在SQLite实现的版本中，所有的查询都是在LocalUserDataSource文件中完成的，里面主要是 使用了Cursor对象来完成查询的工作。有了Room，我们不再需要Cursor的相关代码，而只需在Dao类中使用注解来定义查询。
-
-```kotlin
-@Dao
-interface PaoDao{
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insetAll(articles: List<Article>)
-
-    @Query("SELECT * FROM Articles WHERE articleid= :id")
-    fun getArticleById(id:Int):Single<Article>
-
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertArticle(article :Article)
-
-}
-```
-
-3. #### 创建数据库
-
-   *相当于创建RetrofitClient对象*
-
-   我们需要定义一个继承了RoomDatabase的抽象类。这个类使用@Database来注解，列出它所包含的Entity以及操作它们的 DAO 。
-
-   ```kotlin
-   @Database(entities = arrayOf(Article::class),version = 1)
-   abstract class AppDatabase :RoomDatabase(){
-
-       abstract fun paoDao(): PaoDao
-
-       companion object {
-           @Volatile private var INSTANCE: AppDatabase? = null
-           fun getInstance(context: Context): AppDatabase =
-                   INSTANCE ?: synchronized(this) {
-                       INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
-                   }
-
-           private fun buildDatabase(context: Context) =
-                   Room.databaseBuilder(context.applicationContext,
-                           AppDatabase::class.java, "app.db")
-                           .build()
-       }
-
-   }
-   ```
-
-Over ，集成Room十分的简单。
-
-更多关于Room的使用方法，它的迁移，表之间的关联和字段。
-
-推荐查看泡网的Room专题：[Room](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2017/0728/8279.html)
-
-### 实践
-
-这里我们对上一篇中的从服务器端获取到的Article文章进行持久化。
-
-1. 修改一下Model层的代码，添加Repository作为ViewModel层的数据源
-
-```kotlin
-class PaoRepo constructor(private val remote:PaoService,private val local :PaoDao){
-	//首先查看本地数据库是否存在该篇文章
-    fun getArticleDetail(id:Int)= local.getArticleById(id)
-            .onErrorResumeNext {
-              	//本地数据库不存在，会抛出EmptyResultSetException
-              	//转而获取网络数据,成功后保存到数据库
-                remote.getArticleDetail(id)
-                        .doOnSuccess { local.insertArticle(it) }
-            }
-}
-```
-
-我们的目录结构会如下图所示：
-
-![结构](https://upload-images.jianshu.io/upload_images/3722695-6713c9428d0586e0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/360)
-
-2. 修改我们的ViewModel层的数据源
-
-在上一篇中我们使用的是`PaoService`网络数据作为数据源，这里只需要修改为`PaoRepo`
-
-```kotlin
-class PaoViewModel(private val repo: PaoRepo)
-```
-
-以后统一使用PaoRepo来为PaoViewModel提供数据
-
-3. 在View层中将`PaoRepo`注入到`PaoViewModel`
+这里是使用Kotlin构建MVVM应用程序—第四部分：依赖注入Dagger2
+在前面的一系列文章中，我们了解了在MVVM架构中是如何提供和处理数据的。
 
 ```kotlin
 //////model
@@ -184,47 +22,366 @@ val remote=Retrofit.Builder()
         .build().create(PaoService::class.java)
 val local=AppDatabase.getInstance(applicationContext).paoDao()
 val repo = PaoRepo(remote, local)
-/////ViewModel
-mViewMode= PaoViewModel(repo)
-////binding
-mBinding.vm=mViewMode
+```
+
+为了得到给ViewModel层提供数据的仓库repo，我们需要有`remote`(由Retrofit提供来自服务器的数据)和`local`(由Room提供来自本地的数据)。
+
+由于一个应用程序必定有多个不同的`viewmodel`，所以就必须为其提供多个`repo`，那就需要提供多个`remote`和`local`。而麻烦的便是提供`remote`和`local`的写法都差不了多少，但你却又不得不写。
+
+真正的开发者都不会想做没有效率的事情。
+
+因此，省时省力的依赖注入思想就得到了很多开发者的推崇，在android开发中，那当然就是Dagger2了。
+
+### 什么是dagger2?
+
+> A fast dependency injector for Android and Java.
+
+一个适用于Android和Java的快速的依赖注入工具。
+
+##### 那什么又是依赖注入呢？
+
+我们可以先来看一个例子：我们在写面向对象程序时，往往会用到组合，即在一个类中引用另一个类，从而可以调用引用的类的方法完成某些功能,就像下面这样：
+
+```java
+public class ClassA {
+    ...
+    ClassB b;
+    ...
+    public ClassA() {
+        b = new ClassB();
+    }
+  	public void do() {
+       ...
+       b.doSomething();
+       ...
+    }
+}
+```
+
+这个时候就产生了依赖问题，ClassA依赖于ClassB，必须借助ClassB的方法，才能完成一些功能。这样看好像并没有什么问题，但是我们在ClassA的构造方法里面直接创建了ClassB的实例，问题就出现在这，在ClassA里直接创建ClassB实例，违背了**单一职责原则**，ClassB实例的创建不应由ClassA来完成；其次耦合度增加，扩展性差，如果我们想在实例化ClassB的时候传入参数，那么不得不改动ClassA的构造方法，不符合**开闭原则**。
+
+> 注：
+>
+> 单一职责原则：一个类，只有一个引起它变化的原因。应该只有一个职责。每一个职责都是变化的一个轴线，如果一个类有一个以上的职责，这些职责就耦合在了一起。这会导致脆弱的设计。当一个职责发生变化时，可能会影响其它的职责。另外，多个职责耦合在一起，会影响复用性
+>
+> 开闭原则：一个软件实体如类，模块和函数应该对扩展开放，对修改关闭。
+
+因此我们需要一种注入方式，将依赖注入到宿主类（或者叫目标类）中，从而解决上面所述的问题。
+
+### 引入Dagger2
+
+```groovy
+// Add Dagger dependencies  当前版本2.16
+apply plugin: 'kotlin-kapt'
+dependencies {
+  implementation 'com.google.dagger:dagger:2.16'
+  kapt  'com.google.dagger:dagger-compiler:2.16'
+}
+```
+
+> 注：
+>
+> kapt 即 [Kotlin Annotation Processing](https://link.jianshu.com/?t=https%3A%2F%2Fblog.jetbrains.com%2Fkotlin%2F2015%2F05%2Fkapt-annotation-processing-for-kotlin%2F)，就是服务于Kotlin的注解处理器。可在编译时期获取相关注解数据，然后动态生成.java源文件（让机器帮我们写代码），通常是自动产生一些有规律性的重复代码，解决了手工编写重复代码的问题，大大提升编码效率。
+
+Dagger2便借助了注解处理器生成了许多必须的代码。经过编译之后，这些代码可以在
+
+***app/build/generated/source/kapt/..***目录下找到
+
+刚接触Dagger2的人不明白为什么使用了几个注解之后就不需要再一直new Class了，只是觉得太酷了，Magic。
+
+这样便很容易遇到瓶颈，遇到需要稍加变通的情况，便会手足无措，只好放弃。
+
+这也是许多开发者从入门到放弃的原因—**知其然而不知其所以然**。
+
+Dagger2并没有那么神秘，在我们平常开发看不见的角落（build文件夹），它做了许多额外的工作。当你一不留神注意到那个角落的时候，就会恍然大悟。
+
+### 如何依赖注入？
+
+在具体使用Dagger2之前，我们先来思考一下如何将
+
+```kotlin
+//////model
+val remote=Retrofit.Builder()
+        .baseUrl(Constants.HOST_API)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create())
+        .build().create(PaoService::class.java)
+val local=AppDatabase.getInstance(applicationContext).paoDao()
+val repo = PaoRepo(remote, local)
+/////viewmodel
+mViewModel=PaoViewModel(repo)
+```
+
+这些东西提取出来然后进行统一注入?
+
+假设这些依赖都存在于一个类中，我们把它记为Module:
+
+```kotlin
+//提供依赖
+class Module constructor(val applicationContext:Context){
+    //////model
+    val remote=Retrofit.Builder()
+        .baseUrl(Constants.HOST_API)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create())
+        .build().create(PaoService::class.java)
+	val local=AppDatabase.getInstance(applicationContext).paoDao()
+	val repo = PaoRepo(remote, local)
+  	/////viewmodel
+  	val viewmodel=PaoViewModel(repo)
+}
+```
+
+现在我们需要把`Provider`中的`viewmodel`赋值给`PaoActivity`中的`mViewModel`
+
+这里我们为Provider和Activity搭建一座桥梁`Component`，并提供一个`inject`方法用于注入这些依赖
+
+```kotlin
+//注入依赖
+class Component constructor(val module:Module){
+  //注入
+  fun inject(activity:PaoActivity){
+      activity.mViewModel=module.viewmodel
+  }
+}
+```
+
+最后在View层只需要调用一下`inject`方法便可以进行注入
+
+```kotlin
+class PaoActivity : RxAppCompatActivity() {
+
+    lateinit var mViewModel : PaoViewModel
+
+ 	override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+      	//依赖
+      	val module=Module(applicationContext)
+      	//注入
+      	Component(module).inject(this)
+    }
+}
+```
+
+Dagger2便是应用的这一套逻辑，不过Dagger2在通过`annotationProcessor`在编译时期对注解进行了处理，自动生成了上面描述的代码逻辑。
+
+### 应用Dagger2
+
+首先我们需要了解Dagger2里的几个注解
+
+1. @Inject
+
+   它用于标识哪些应该被注入，被标识的可以是`public`属性或者`constructor`构造函数
+
+2. @Component
+
+   这里用于标识依赖和待注入对象之间的桥梁
+
+3. @Module
+
+   带有此注解的类，用来提供依赖，里面定义一些用@Provides注解的以provide开头的方法，这些方法就是所提供的依赖，Dagger2会在该类中寻找实例化某个类所需要的依赖
+
+Dagger2通过处理这几个注解之后，便会自动生成我们需要的前文中的代码。
+
+而开发者需要做的不过是根据实际的需要合理运用这几种注解即可。
+
+首先，我们新建我们需要的文件
+
+![di](https://upload-images.jianshu.io/upload_images/3722695-c172003f03b9e0cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/620)
+
+AppModule.kt:
+
+```kotlin
+@Module
+class AppModule(val applicationContext: Context){
+
+    //提供 Retrofit 实例
+    @Provides @Singleton
+    fun provideRemoteClient(): Retrofit = Retrofit.Builder()
+            .baseUrl(Constants.HOST_API)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    //提供 PaoService 实例
+    @Provides @Singleton
+    fun providePaoService(client:Retrofit) =client.create(PaoService::class.java)
+
+    //提供 数据库 实例
+    @Provides @Singleton
+    fun provideAppDataBase():AppDatabase = AppDatabase.getInstance(applicationContext)
+
+    //提供PaoDao 实例
+    @Provides @Singleton
+    fun providePaoDao(dataBase:AppDatabase)=dataBase.paoDao()
+}
 ```
 
 
 
-看看效果
+AppComponent.kt:
 
-![image](http://upload-images.jianshu.io/upload_images/3722695-da10c9f98784fde4?imageMogr2/auto-orient/strip)
+```kotlin
+@Singleton
+@Component(modules = arrayOf(AppModule::class))
+interface AppComponent{
 
-### 写在最后
+    fun inject(activity: PaoActivity)
+}
+```
+
+> modules 表明了哪些依赖可以被提供。
+
+我们我需要使用@Inject标识哪些需要被注入
+
+PaoActivity.kt
+
+```kotlin
+class PaoActivity : RxAppCompatActivity() {
+  	//标识mViewModel需要被注入
+    @Inject
+    lateinit var mViewModel : PaoViewModel
+
+ 	override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+      	//di
+      	getComponent().inject(this)
+    }
+
+
+    fun getComponent()=DaggerAppComponent.builder()
+            .appModule(AppModule(applicationContext)).build()
+}
+```
+
+PaoViewModel.kt
+
+```kotlin
+//@Inject 可用于构造函数，表示构造函数中的参数是被自动注入的
+class PaoViewModel @Inject constructor(private val repo: PaoRepo)class PaoViewModel @Inject constructor(private val repo: PaoRepo)
+```
+
+PaoRepo.kt
+
+```kotlin
+//@Inject 可用于构造函数，表示构造函数中的参数是被自动注入的
+class PaoRepo @Inject constructor(private val remote:PaoService, private val local :PaoDao)
+```
+
+整个过程可以简单看作是一个交易
+
+Component就类似于商店一样，AppModule是供应商，提供各种商品给商店，PaoActivity可以看作顾客
+
+> AppModule：我把货都给你了
+>
+> AppComponent：好嘞，收到
+>
+> 过了一会儿，PaoActivity来采购了
+>
+> PaoActivity：我需要一个PaoViewModel，有卖的没？
+>
+> AppComponent：稍等 ，我帮您看看
+>
+> PaoActivity：嗯哼
+>
+> AppComponent：一个PaoViewModel需要一个PaoRepo，一个PaoRepo需要有PaoService和PaoDao。嗯，都有，可以成交
+>
+> 然后便愉快的完成了这单交易
+
+编译之后，通过处理注解会生成以下文件
+
+![build](https://upload-images.jianshu.io/upload_images/3722695-ee625b51a4dacf6b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/620)
+
+
+
+
+
+附上编译生成的`DaggerAppComponent.kt`文件
+
+```java
+public final class DaggerAppComponent implements AppComponent {
+  private Provider<Retrofit> provideRemoteClientProvider;
+
+  private Provider<PaoService> providePaoServiceProvider;
+
+  private Provider<AppDatabase> provideAppDataBaseProvider;
+
+  private Provider<PaoDao> providePaoDaoProvider;
+
+  private DaggerAppComponent(Builder builder) {
+    initialize(builder);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  private PaoRepo getPaoRepo() {
+    return new PaoRepo(providePaoServiceProvider.get(), providePaoDaoProvider.get());
+  }
+
+  private PaoViewModel getPaoViewModel() {
+    return new PaoViewModel(getPaoRepo());
+  }
+
+  @SuppressWarnings("unchecked")
+  private void initialize(final Builder builder) {
+    this.provideRemoteClientProvider =
+        DoubleCheck.provider(AppModule_ProvideRemoteClientFactory.create(builder.appModule));
+    this.providePaoServiceProvider =
+        DoubleCheck.provider(
+            AppModule_ProvidePaoServiceFactory.create(
+                builder.appModule, provideRemoteClientProvider));
+    this.provideAppDataBaseProvider =
+        DoubleCheck.provider(AppModule_ProvideAppDataBaseFactory.create(builder.appModule));
+    this.providePaoDaoProvider =
+        DoubleCheck.provider(
+            AppModule_ProvidePaoDaoFactory.create(builder.appModule, provideAppDataBaseProvider));
+  }
+
+  @Override
+  public void inject(PaoActivity activity) {
+    injectPaoActivity(activity);
+  }
+
+  private PaoActivity injectPaoActivity(PaoActivity instance) {
+    PaoActivity_MembersInjector.injectMViewModel(instance, getPaoViewModel());
+    return instance;
+  }
+
+  public static final class Builder {
+    private AppModule appModule;
+
+    private Builder() {}
+
+    public AppComponent build() {
+      if (appModule == null) {
+        throw new IllegalStateException(AppModule.class.getCanonicalName() + " must be set");
+      }
+      return new DaggerAppComponent(this);
+    }
+
+    public Builder appModule(AppModule appModule) {
+      this.appModule = Preconditions.checkNotNull(appModule);
+      return this;
+    }
+  }
+}
+```
+
+到此，本篇的文章就结束了。
 
 本项目的github地址：[https://github.com/ditclear/MVVM-Android](https://link.jianshu.com/?t=https://github.com/ditclear/MVVM-Android)
 
 更多的例子可以查看：[https://github.com/ditclear/PaoNet](https://link.jianshu.com/?t=https://github.com/ditclear/PaoNet)
 
-这是使用Kotlin构建MVVM项目的第三部分，主要讲了怎么在MVVM中进行数据的持久化以及为ViewModel层提供Repository作为唯一的数据源。
+### 写在最后
 
-总结一下前三篇的内容便是:
+其实Dagger2理解起来并不难，只要去看看生成的文件，便很容易明白。但是很多android开发者都不喜欢问为什么，更不喜欢探究为什么，不看源码，只懂使用，导致在技术上止步不前，才有那么多次的从入门到放弃。
 
-> 使用Retrofit提供来自服务端的数据，使用Room来进行持久化，然后提供一个Repository来为ViewModel提供数据，ViewModel层利用RxJava来进行数据的转换，配合DataBinding引起View层的变化。
+多看书，多写代码，多读源码，路才能走宽。
 
-逻辑很清晰了，但唯一的遗憾便是为了提供一个ViewModel我们需要写太多模板化的代码了
+#### 参考资料
 
-```kotlin
-//////model
-val remote=Retrofit.Builder()
-        .baseUrl(Constants.HOST_API)
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build().create(PaoService::class.java)
-val local=AppDatabase.getInstance(applicationContext).paoDao()
-val repo = PaoRepo(remote, local)
-/////ViewModel
-mViewMode= PaoViewModel(repo)
-```
-如果能不写该多好。
-
-> 上帝说：可以。
-
-所以下一篇的内容便是依赖注入—Dagger2，从入门到放弃到恍然大悟到爱不释手。。。
-
+- [Dagger2从入门到放弃再到恍然大悟](https://www.jianshu.com/p/39d1df6c877d)
+- [google dagger2](https://github.com/google/dagger)

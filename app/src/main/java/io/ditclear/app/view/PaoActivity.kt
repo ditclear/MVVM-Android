@@ -10,19 +10,17 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.ditclear.app.BuildConfig
 import io.ditclear.app.R
 import io.ditclear.app.databinding.PaoActivityBinding
-import io.ditclear.app.helper.Constants
-import io.ditclear.app.model.local.AppDatabase
-import io.ditclear.app.model.remote.PaoService
-import io.ditclear.app.model.repository.PaoRepo
+import io.ditclear.app.di.component.DaggerAppComponent
+import io.ditclear.app.di.module.AppModule
 import io.ditclear.app.viewmodel.PaoViewModel
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
 class PaoActivity : RxAppCompatActivity() {
 
     lateinit var mBinding : PaoActivityBinding
-    lateinit var mViewMode : PaoViewModel
+
+    @Inject
+    lateinit var mViewModel : PaoViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,20 +31,14 @@ class PaoActivity : RxAppCompatActivity() {
         mBinding=DataBindingUtil.setContentView(this,R.layout.pao_activity)
         setSupportActionBar(mBinding.toolbar)
         mBinding.webView.setOnLongClickListener { true }
-        //////model
-        val remote=Retrofit.Builder()
-                .baseUrl(Constants.HOST_API)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build().create(PaoService::class.java)
-
-        val local=AppDatabase.getInstance(applicationContext).paoDao()
-
-        /////ViewModel
-        mViewMode= PaoViewModel(PaoRepo(remote, local))
+        //////di
+        getComponent().inject(this)
         ////binding
-        mBinding.vm=mViewMode
+        mBinding.vm=mViewModel
     }
+
+    fun getComponent()=DaggerAppComponent.builder()
+            .appModule(AppModule(applicationContext)).build()
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.let {
@@ -58,7 +50,7 @@ class PaoActivity : RxAppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             when(it.itemId){
-                R.id.action_refresh -> mViewMode.loadArticle().compose(bindToLifecycle())
+                R.id.action_refresh -> mViewModel.loadArticle().compose(bindToLifecycle())
                         .subscribe { _, error -> dispatchError(error) }
                 else -> { }
             }
