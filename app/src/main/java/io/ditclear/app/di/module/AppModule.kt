@@ -1,6 +1,6 @@
 package io.ditclear.app.di.module
 
-import android.content.Context
+import android.app.Application
 import dagger.Module
 import dagger.Provides
 import io.ditclear.app.helper.Constants
@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-class AppModule(val applicationContext: Context){
+class AppModule{
 
     //提供 Retrofit 实例
     @Provides @Singleton
@@ -28,7 +28,7 @@ class AppModule(val applicationContext: Context){
 
     //提供 数据库 实例
     @Provides @Singleton
-    fun provideAppDataBase():AppDatabase = AppDatabase.getInstance(applicationContext)
+    fun provideAppDataBase(application: Application):AppDatabase = AppDatabase.getInstance(application)
 
     //提供PaoDao 实例
     @Provides @Singleton

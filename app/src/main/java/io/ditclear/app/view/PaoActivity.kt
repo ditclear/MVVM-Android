@@ -7,11 +7,10 @@ import android.view.MenuItem
 import android.widget.Toast
 import com.facebook.stetho.Stetho
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
+import dagger.android.AndroidInjection
 import io.ditclear.app.BuildConfig
 import io.ditclear.app.R
 import io.ditclear.app.databinding.PaoActivityBinding
-import io.ditclear.app.di.component.DaggerAppComponent
-import io.ditclear.app.di.module.AppModule
 import io.ditclear.app.viewmodel.PaoViewModel
 import javax.inject.Inject
 
@@ -23,22 +22,19 @@ class PaoActivity : RxAppCompatActivity() {
     lateinit var mViewModel : PaoViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //////di
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         if (BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(applicationContext)
         }
-
         mBinding=DataBindingUtil.setContentView(this,R.layout.pao_activity)
         setSupportActionBar(mBinding.toolbar)
         mBinding.webView.setOnLongClickListener { true }
-        //////di
-        getComponent().inject(this)
         ////binding
         mBinding.vm=mViewModel
     }
 
-    fun getComponent()=DaggerAppComponent.builder()
-            .appModule(AppModule(applicationContext)).build()
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menu?.let {

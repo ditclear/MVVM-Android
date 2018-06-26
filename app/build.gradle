@@ -64,6 +64,9 @@ dependencies {
     //dagger2  di
     implementation 'com.google.dagger:dagger:2.16'
     kapt 'com.google.dagger:dagger-compiler:2.16'
+    implementation 'com.google.dagger:dagger-android:2.16'
+    implementation 'com.google.dagger:dagger-android-support:2.16' // if you use the support libraries
+    kapt 'com.google.dagger:dagger-android-processor:2.16'
 
     //不重要
     implementation 'us.feras.mdv:markdownview:1.1.0'
