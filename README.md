@@ -10,4 +10,5 @@
 
 ### 提高篇
 
-- [使用Kotlin构建MVVM应用程序—提高篇：Dagger-Android.md](https://xiaozhuanlan.com/topic/6093518472)
+- [使用Kotlin构建MVVM应用程序—提高篇：Dagger-Android](https://xiaozhuanlan.com/topic/6093518472)
+- [使用Kotlin构建MVVM应用程序—提高篇：ViewModel](https://xiaozhuanlan.com/topic/6705498213)

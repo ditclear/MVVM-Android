@@ -7,13 +7,11 @@ import dagger.android.AndroidInjectionModule
 import io.ditclear.app.PaoApp
 import io.ditclear.app.di.module.ActivityModule
 import io.ditclear.app.di.module.AppModule
+import io.ditclear.app.di.module.ViewModelModule
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = arrayOf(
-        AndroidInjectionModule::class,
-        AppModule::class,
-        ActivityModule::class)
+@Component(modules = [(AndroidInjectionModule::class), (AppModule::class), (ViewModelModule::class), (ActivityModule::class)]
 )
 interface AppComponent {
 

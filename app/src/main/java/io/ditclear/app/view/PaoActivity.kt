@@ -1,5 +1,7 @@
 package io.ditclear.app.view
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.Menu
@@ -18,8 +20,10 @@ class PaoActivity : RxAppCompatActivity() {
 
     lateinit var mBinding : PaoActivityBinding
 
-    @Inject
     lateinit var mViewModel : PaoViewModel
+
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //////di
@@ -31,6 +35,7 @@ class PaoActivity : RxAppCompatActivity() {
         mBinding=DataBindingUtil.setContentView(this,R.layout.pao_activity)
         setSupportActionBar(mBinding.toolbar)
         mBinding.webView.setOnLongClickListener { true }
+        mViewModel=ViewModelProviders.of(this,factory).get(PaoViewModel::class.java)
         ////binding
         mBinding.vm=mViewModel
     }
