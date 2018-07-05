@@ -35,9 +35,7 @@ android {
                 files("$projectDir/schemas".toString())
     }
 }
-kapt {
-    generateStubs = true
-}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
@@ -48,7 +46,9 @@ dependencies {
     //rx android
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.8'
-    implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1'
+    //autodispose
+    implementation 'com.uber.autodispose:autodispose:0.8.0'
+    implementation 'com.uber.autodispose:autodispose-android-archcomponents:0.8.0'
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'

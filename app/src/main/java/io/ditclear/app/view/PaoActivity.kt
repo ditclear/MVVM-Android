@@ -2,20 +2,21 @@ package io.ditclear.app.view
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.facebook.stetho.Stetho
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 import io.ditclear.app.BuildConfig
 import io.ditclear.app.R
 import io.ditclear.app.databinding.PaoActivityBinding
 import io.ditclear.app.di.component.DaggerAppComponent
 import io.ditclear.app.di.module.AppModule
+import io.ditclear.app.helper.bindLifeCycle
 import io.ditclear.app.viewmodel.PaoViewModel
 import javax.inject.Inject
 
-class PaoActivity : RxAppCompatActivity() {
+class PaoActivity : AppCompatActivity() {
 
     lateinit var mBinding : PaoActivityBinding
 
@@ -50,13 +51,17 @@ class PaoActivity : RxAppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             when(it.itemId){
-                R.id.action_refresh -> mViewModel.loadArticle().compose(bindToLifecycle())
-                        .subscribe { _, error -> dispatchError(error) }
+                R.id.action_refresh -> mViewModel.loadArticle()
+                        .bindLifeCycle(this)
+                        .subscribe({},{dispatchError(it)})
                 else -> { }
             }
         }
         return super.onOptionsItemSelected(item)
     }
+
+
+
 
     //依旧不依赖于具体实现
     private fun dispatchError(error:Throwable?, length:Int=Toast.LENGTH_SHORT){
@@ -66,3 +71,5 @@ class PaoActivity : RxAppCompatActivity() {
         }
     }
 }
+
+
