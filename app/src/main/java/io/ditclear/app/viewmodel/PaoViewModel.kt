@@ -1,10 +1,10 @@
 package io.ditclear.app.viewmodel
 
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import android.databinding.ObservableBoolean
-import android.databinding.ObservableField
 import io.ditclear.app.helper.Utils
 import io.ditclear.app.helper.async
+import io.ditclear.app.helper.set
 import io.ditclear.app.model.data.Article
 import io.ditclear.app.model.repository.PaoRepo
 import io.reactivex.Single
@@ -18,10 +18,15 @@ import javax.inject.Inject
 class PaoViewModel @Inject constructor(private val repo: PaoRepo) :ViewModel(){
 
     //////////////////data//////////////
-    val loading=ObservableBoolean(false)
-    val content = ObservableField<String>()
-    val title = ObservableField<String>()
-    val error = ObservableField<Throwable>()
+    val loading=MutableLiveData<Boolean>()
+    val content = MutableLiveData<String>()
+    val title = MutableLiveData<String>()
+
+    val error = MutableLiveData<Throwable>()
+
+    init {
+        loading.set(false)
+    }
 
     //////////////////binding//////////////
     fun loadArticle():Single<Article> =
@@ -42,6 +47,9 @@ class PaoViewModel @Inject constructor(private val repo: PaoRepo) :ViewModel(){
 
 
 
-    private fun startLoad()=loading.set(true)
+    private fun startLoad(){
+        loading.set(true)
+        title.set("Loading...")
+    }
     private fun stopLoad()=loading.set(false)
 }

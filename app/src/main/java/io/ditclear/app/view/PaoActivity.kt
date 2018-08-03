@@ -34,10 +34,13 @@ class PaoActivity : RxAppCompatActivity() {
         }
         mBinding=DataBindingUtil.setContentView(this,R.layout.pao_activity)
         setSupportActionBar(mBinding.toolbar)
+        supportActionBar?.title = null
         mBinding.webView.setOnLongClickListener { true }
         mViewModel=ViewModelProviders.of(this,factory).get(PaoViewModel::class.java)
         ////binding
         mBinding.vm=mViewModel
+        mBinding.setLifecycleOwner(this)
+
     }
 
 
@@ -48,11 +51,14 @@ class PaoActivity : RxAppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    var boolean = false
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             when(it.itemId){
                 R.id.action_refresh -> mViewModel.loadArticle().compose(bindToLifecycle())
-                        .subscribe { _, error -> dispatchError(error) }
+                        .subscribe ({
+                        },{  dispatchError(it) })
+
                 else -> { }
             }
         }
