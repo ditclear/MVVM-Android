@@ -1,5 +1,6 @@
 package io.ditclear.app.model.repository
 
+import android.arch.persistence.room.EmptyResultSetException
 import io.ditclear.app.model.local.dao.PaoDao
 import io.ditclear.app.model.remote.PaoService
 import javax.inject.Inject
@@ -9,12 +10,14 @@ import javax.inject.Inject
  *
  * Created by ditclear on 2018/4/14.
  */
-class PaoRepo @Inject constructor(private val remote:PaoService, private val local :PaoDao){
+class PaoRepo @Inject constructor(private val remote: PaoService, private val local: PaoDao) {
 
-    fun getArticleDetail(id:Int)= local.getArticleById(id)
+    fun getArticleDetail(id: Int) = local.getArticleById(id)
             .onErrorResumeNext {
-                remote.getArticleById(id)
-                        .doOnSuccess { local.insertArticle(it) }
+                if (it is EmptyResultSetException) {
+                    remote.getArticleById(id)
+                            .doOnSuccess { local.insertArticle(it) }
+                } else throw it
             }
 
 

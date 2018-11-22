@@ -8,6 +8,7 @@
   - [使用Kotlin构建MVVM应用程序—第三部分：Room](https://xiaozhuanlan.com/topic/8076241593)
   - [使用Kotlin构建MVVM应用程序—第四部分：依赖注入Dagger2](https://xiaozhuanlan.com/topic/2510974386)
   - [使用Kotlin构建MVVM应用程序—第五部分：LiveData](https://xiaozhuanlan.com/topic/9753861024)
+  - [使用Kotlin构建MVVM应用程序—第六部分：单元测试](https://www.jianshu.com/p/2ce583fc3b2d)
 
   ### 提高篇
 
