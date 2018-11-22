@@ -3,10 +3,12 @@ package io.ditclear.app.viewmodel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import io.ditclear.app.helper.Utils
-import io.ditclear.app.helper.async
 import io.ditclear.app.model.data.Article
 import io.ditclear.app.model.repository.PaoRepo
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -25,7 +27,9 @@ class PaoViewModel @Inject constructor(private val repo: PaoRepo) {
     //////////////////binding//////////////
     fun loadArticle(): Single<Article> =
             repo.getArticleDetail(8773)
-                    .async(1000)
+                    .subscribeOn(Schedulers.io())
+                    .delay(1000,TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess {
                         renderDetail(it)
                     }

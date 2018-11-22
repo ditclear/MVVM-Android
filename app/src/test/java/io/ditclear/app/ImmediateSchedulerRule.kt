@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 页面描述：ImmediateSchedulerRule
+ * 使用RxJavaPlugins和RxAndroidPlugins这些类用TestScheduler覆盖默认的scheduler。
  *
  * Created by ditclear on 2018/11/19.
  */
@@ -42,9 +43,14 @@ class ImmediateSchedulerRule private constructor(): TestRule {
             }
         }
     }
-
+    //将时间提前xx ms
     fun advanceTimeBy(milliseconds:Long){
         immediate.advanceTimeBy(milliseconds,TimeUnit.MILLISECONDS)
+
+    }
+    //将时间提前到xx ms
+    fun advanceTimeTo(milliseconds:Long){
+        immediate.advanceTimeTo(milliseconds,TimeUnit.MILLISECONDS)
 
     }
 }

@@ -13,9 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
 
 /**
  * 页面描述：PaoViewModelTest
@@ -25,15 +23,13 @@ import org.mockito.MockitoAnnotations
 @RunWith(JUnit4::class)
 class PaoViewModelTest {
 
-    @Mock
-    lateinit var remote: PaoService
+    private val remote= mock(PaoService::class.java)
 
-    @Mock
-    lateinit var local: PaoDao
+    private val local = mock(PaoDao::class.java)
 
-    lateinit var repo: PaoRepo
+    private val repo = PaoRepo(remote, local)
 
-    lateinit var viewModel: PaoViewModel
+    private val viewModel = spy(PaoViewModel(repo))
 
     private val article = mock(Article::class.java)
 
@@ -44,11 +40,7 @@ class PaoViewModelTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-        repo = spy(PaoRepo(remote, local))
-        viewModel = spy(PaoViewModel(repo))
-
-        //让local.getArticleById()方法返回可观测的article
+        //让local.getArticleById()方法正常返回数据
         whenever(local.getArticleById(anyInt())).thenReturn( Single.just(article))
     }
 
