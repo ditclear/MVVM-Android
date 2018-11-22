@@ -17,30 +17,31 @@ import javax.inject.Inject
 class PaoViewModel @Inject constructor(private val repo: PaoRepo) {
 
     //////////////////data//////////////
-    val loading=ObservableBoolean(false)
+    val loading = ObservableBoolean(false)
     val content = ObservableField<String>()
     val title = ObservableField<String>()
     val error = ObservableField<Throwable>()
 
     //////////////////binding//////////////
-    fun loadArticle():Single<Article> =
+    fun loadArticle(): Single<Article> =
             repo.getArticleDetail(8773)
-                .async(1000)
-                .doOnSuccess { t: Article? ->
-                    t?.let {
-                        title.set(it.title)
-                        it.content?.let {
-                            val articleContent=Utils.processImgSrc(it)
-                            content.set(articleContent)
-                        }
-
+                    .async(1000)
+                    .doOnSuccess {
+                        renderDetail(it)
                     }
-                }
-                .doOnSubscribe { startLoad()}
-                .doAfterTerminate { stopLoad() }
+                    .doOnSubscribe { startLoad() }
+                    .doAfterTerminate { stopLoad() }
 
 
+    fun renderDetail(detail: Article) {
+            title.set(detail.title)
+            detail.content?.let {
+                val articleContent = Utils.processImgSrc(it)
+                content.set(articleContent)
+            }
+    }
 
-    private fun startLoad()=loading.set(true)
-    private fun stopLoad()=loading.set(false)
+
+    private fun startLoad() = loading.set(true)
+    private fun stopLoad() = loading.set(false)
 }

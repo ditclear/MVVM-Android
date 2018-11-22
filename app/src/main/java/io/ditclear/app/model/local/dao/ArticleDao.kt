@@ -5,6 +5,7 @@ import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import io.ditclear.app.model.data.Article
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 /**
@@ -19,7 +20,7 @@ interface PaoDao{
     fun insetAll(articles: List<Article>)
 
     @Query("SELECT * FROM Articles WHERE articleid= :id")
-    fun getArticleById(id:Int):Single<Article>
+    fun getArticleById(id:Int): Single<Article>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
