@@ -13,7 +13,7 @@ class PaoRepo @Inject constructor(private val remote:PaoService, private val loc
 
     fun getArticleDetail(id:Int)= local.getArticleById(id)
             .onErrorResumeNext {
-                remote.getArticleDetail(id)
+                remote.getArticleById(id)
                         .doOnSuccess { local.insertArticle(it) }
             }
 
