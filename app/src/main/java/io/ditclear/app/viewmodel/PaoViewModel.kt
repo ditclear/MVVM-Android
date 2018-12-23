@@ -8,14 +8,13 @@ import io.ditclear.app.helper.async
 import io.ditclear.app.model.data.Article
 import io.ditclear.app.model.repository.PaoRepo
 import io.reactivex.Single
-import javax.inject.Inject
 
 /**
  * 页面描述：PaoViewModel
  * @param animal 数据源Model(MVVM 中的M),负责提供ViewModel中需要处理的数据
  * Created by ditclear on 2017/11/17.
  */
-class PaoViewModel @Inject constructor(private val repo: PaoRepo) :ViewModel(){
+class PaoViewModel constructor(private val repo: PaoRepo) :ViewModel(){
 
     //////////////////data//////////////
     val loading=ObservableBoolean(false)

@@ -1,6 +1,6 @@
 package io.ditclear.app
 
-import org.junit.Assert.assertEquals
+import io.reactivex.Flowable
 import org.junit.Test
 
 /**
@@ -12,6 +12,19 @@ class ExampleUnitTest {
     @Test
     @Throws(Exception::class)
     fun addition_isCorrect() {
-        assertEquals(4, (2 + 2).toLong())
+        Flowable.range(0, 10)
+                .doOnNext {
+
+                }
+                .doOnSubscribe { s->
+                    (0..10).forEach {
+                        Thread.sleep(1000)
+                        //Flowable是拉取型的，需要手动调request才会走下一个
+                        s.request(1)//1代表拉取一个，2就是拉取两个
+                    }
+                }
+                .subscribe({
+                    println(it)
+                },{ println("onError")})
     }
 }
