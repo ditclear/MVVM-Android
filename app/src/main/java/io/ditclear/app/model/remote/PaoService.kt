@@ -15,6 +15,6 @@ interface PaoService{
      * 文章详情
      */
     @GET("article_detail.php")
-    fun getArticleById(@Query("id") id: Int): Single<Article>
+    fun getArticleDetail(@Query("id") id: Int): Single<Article>
 
 }
