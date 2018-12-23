@@ -74,6 +74,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.10.3'//处理html中的image
 
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.15.0'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
