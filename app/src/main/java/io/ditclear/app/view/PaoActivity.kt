@@ -16,6 +16,7 @@ import io.ditclear.app.R
 import io.ditclear.app.databinding.PaoActivityBinding
 import io.ditclear.app.viewmodel.PaoViewModel
 import io.reactivex.Single
+import org.koin.android.viewmodel.ext.android.getViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class PaoActivity : AppCompatActivity() {
@@ -33,6 +34,7 @@ class PaoActivity : AppCompatActivity() {
         setSupportActionBar(mBinding.toolbar)
         ////binding
         mBinding.vm = mViewModel
+        getViewModel<PaoViewModel>()
     }
 
 
