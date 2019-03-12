@@ -34,7 +34,6 @@ class PaoActivity : AppCompatActivity() {
         setSupportActionBar(mBinding.toolbar)
         ////binding
         mBinding.vm = mViewModel
-        getViewModel<PaoViewModel>()
     }
 
 
